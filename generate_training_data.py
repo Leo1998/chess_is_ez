@@ -9,7 +9,7 @@ def get_dataset(num_samples=None):
   values = {'1/2-1/2':0, '0-1':-1, '1-0':1}
 
   for fn in os.listdir("data"):
-    pgn = open(os.path.join("data", fn))
+    pgn = open(os.path.join("data", fn), encoding="ISO-8859-1")
     while 1:
       game = chess.pgn.read_game(pgn)
       if game is None:
@@ -33,11 +33,11 @@ def get_dataset(num_samples=None):
   return X,Y
 
 if __name__ == "__main__":
-  X,Y = get_dataset(10000)
-  np.savez("parsed_data/dataset_10K.npz", X, Y)
+#  X,Y = get_dataset(10000)
+#  np.savez("parsed_data/dataset_10K.npz", X, Y)
 
-  X,Y = get_dataset(1000000)
-  np.savez("parsed_data/dataset_1M.npz", X, Y)
+#  X,Y = get_dataset(1000000)
+#  np.savez("parsed_data/dataset_1M.npz", X, Y)
 
-  X,Y = get_dataset(None)
-  np.savez("parsed_data/dataset_full.npz", X, Y)
+  X,Y = get_dataset(25000000)
+  np.savez("parsed_data/dataset_25M.npz", X, Y)
