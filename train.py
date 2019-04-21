@@ -36,7 +36,7 @@ def create_model():
 
     model.add(Dense(1, activation='tanh'))
 
-    model.compile(loss="mean_squared_error", optimizer='adadelta')
+    model.compile(loss="mean_squared_error", optimizer='adam')
 
     #model.summary()
     return model
@@ -47,8 +47,9 @@ if __name__ == "__main__":
     model = create_model()
 
     model.fit(dataset[0], dataset[1],
-          batch_size=256,
+          batch_size=512,
           epochs=8,
+          shuffle=True,
           verbose=1,
           validation_split=0.0)
 
