@@ -42,14 +42,14 @@ def create_model():
     return model
 
 if __name__ == "__main__":
-    dataset = load_dataset("parsed_data/dataset_10K.npz")
+    dataset = load_dataset("parsed_data/dataset_1M.npz")
 
     model = create_model()
 
     model.fit(dataset[0], dataset[1],
-          batch_size=64,
-          epochs=15,
+          batch_size=256,
+          epochs=8,
           verbose=1,
           validation_split=0.0)
 
-    model.save("models/small-10K-15E.model")
+    model.save("models/small-1M-8E.model")
