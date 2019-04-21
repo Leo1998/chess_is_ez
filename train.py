@@ -1,14 +1,18 @@
-import numpy as np
+
+import os
+os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
 
 from keras.layers import Conv2D, Flatten, Dense
 from keras.models import Sequential
 
+import numpy as np
 
 def load_dataset(filepath):
     d = np.load(filepath)
     X = d['arr_0'].astype(float)
     Y = d['arr_1'].astype(float)
     print("Loaded dataset", X.shape, Y.shape)
+    return (X, Y)
 
 def create_model():
     model = Sequential()
@@ -32,9 +36,20 @@ def create_model():
 
     model.add(Dense(1, activation='tanh'))
 
-    model.summary()
+    model.compile(loss="mean_squared_error", optimizer='adadelta')
+
+    #model.summary()
+    return model
 
 if __name__ == "__main__":
     dataset = load_dataset("parsed_data/dataset_10K.npz")
 
     model = create_model()
+
+    model.fit(dataset[0], dataset[1],
+          batch_size=64,
+          epochs=15,
+          verbose=1,
+          validation_split=0.0)
+
+    model.save("models/small-10K-15E.model")
