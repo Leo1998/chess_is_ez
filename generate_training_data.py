@@ -1,15 +1,15 @@
 import os
 import chess.pgn
 import numpy as np
-from state import State
+from game_state import GameState
 
 def get_dataset(num_samples=None):
   X,Y = [], []
   games_parsed = 0
   values = {'1/2-1/2':0, '0-1':-1, '1-0':1}
 
-  for fn in os.listdir("raw_pgn"):
-    pgn = open(os.path.join("raw_pgn", fn))
+  for fn in os.listdir("data"):
+    pgn = open(os.path.join("data", fn))
     while 1:
       game = chess.pgn.read_game(pgn)
       if game is None:
@@ -19,12 +19,12 @@ def get_dataset(num_samples=None):
         continue
       value = values[res]
       board = game.board()
-      for i, move in enumerate(game.main_line()):
+      for i, move in enumerate(game.mainline_moves()):
         board.push(move)
-        ser = State(board).serialize()
+        ser = GameState(board).serialize()
         X.append(ser)
         Y.append(value)
-      print("parsing game %d, got %d examples" % (gn, len(X)))
+      print("Parsed {} games, got {} moves".format(games_parsed, len(X)))
       if num_samples is not None and len(X) > num_samples:
         return X,Y
       games_parsed += 1
@@ -34,4 +34,10 @@ def get_dataset(num_samples=None):
 
 if __name__ == "__main__":
   X,Y = get_dataset(10000)
-  np.savez("data/dataset.npz", X, Y)
+  np.savez("parsed_data/dataset_10K.npz", X, Y)
+
+  X,Y = get_dataset(1000000)
+  np.savez("parsed_data/dataset_1M.npz", X, Y)
+
+  X,Y = get_dataset(None)
+  np.savez("parsed_data/dataset_full.npz", X, Y)
