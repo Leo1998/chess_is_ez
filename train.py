@@ -2,15 +2,18 @@
 import os
 os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
 
+import time
+
 from keras.layers import Conv2D, Flatten, Dense
 from keras.models import Sequential
+from keras.callbacks import ModelCheckpoint
 
 import numpy as np
 
 def load_dataset(filepath):
-    d = np.load(filepath)
-    X = d['arr_0'].astype(float)
-    Y = d['arr_1'].astype(float)
+    d = np.load(filepath, mmap_mode='r+')
+    X = d['arr_0']
+    Y = d['arr_1']
     print("Loaded dataset", X.shape, Y.shape)
     return (X, Y)
 
@@ -42,15 +45,22 @@ def create_model():
     return model
 
 if __name__ == "__main__":
-    dataset = load_dataset("parsed_data/dataset_1M.npz")
+    dataset = load_dataset("parsed_data/dataset_10M.npz")
 
     model = create_model()
 
-    model.fit(dataset[0], dataset[1],
-          batch_size=512,
-          epochs=8,
-          shuffle=True,
-          verbose=1,
-          validation_split=0.0)
+    filepath="checkpoints/weights-improvement-{epoch:02d}-{loss:.2f}.hdf5"
+    checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=False)
 
-    model.save("models/small-1M-8E.model")
+    try:
+          model.fit(dataset[0], dataset[1],
+                batch_size=1024,
+                epochs=12,
+                shuffle=True,
+                verbose=1,
+                callbacks=[checkpoint],
+                validation_split=0.0)
+    except KeyboardInterrupt:
+          model.save("models/interrupted-{}.model".format(time.time()))
+
+    model.save("models/small-10M-12E.model")
