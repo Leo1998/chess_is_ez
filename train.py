@@ -21,53 +21,53 @@ def load_dataset(filepath):
 def create_model():
     model = Sequential()
 
-    acti = LeakyReLU(alpha=0.2)
+    lReLUAlpha = 0.2
 
     model.add(Conv2D(5, kernel_size=(3,3), use_bias=False, data_format='channels_first', padding='same', input_shape=(5,8,8)))
     model.add(BatchNormalization())
-    model.add(Activation(acti))
+    model.add(LeakyReLU(alpha=lReLUAlpha))
     model.add(Conv2D(16, kernel_size=(3,3), use_bias=False, data_format='channels_first', padding='same'))
     model.add(BatchNormalization())
-    model.add(Activation(acti))
+    model.add(LeakyReLU(alpha=lReLUAlpha))
     model.add(Conv2D(16, kernel_size=(3,3), use_bias=False, data_format='channels_first', padding='same'))
     model.add(BatchNormalization())
-    model.add(Activation(acti))
+    model.add(LeakyReLU(alpha=lReLUAlpha))
 
     ###########################
 
     model.add(Conv2D(32, kernel_size=(3,3), use_bias=False, data_format='channels_first', padding='same'))
     model.add(BatchNormalization())
-    model.add(Activation(acti))
+    model.add(LeakyReLU(alpha=lReLUAlpha))
     model.add(Conv2D(32, kernel_size=(3,3), use_bias=False, data_format='channels_first', padding='same'))
     model.add(BatchNormalization())
-    model.add(Activation(acti))
+    model.add(LeakyReLU(alpha=lReLUAlpha))
     model.add(Conv2D(32, kernel_size=(3,3), use_bias=False, data_format='channels_first', padding='same'))
     model.add(BatchNormalization())
-    model.add(Activation(acti))
+    model.add(LeakyReLU(alpha=lReLUAlpha))
 
     ###########################
 
     model.add(Conv2D(64, kernel_size=(2,2), use_bias=False, data_format='channels_first', padding='same'))
     model.add(BatchNormalization())
-    model.add(Activation(acti))
+    model.add(LeakyReLU(alpha=lReLUAlpha))
     model.add(Conv2D(64, kernel_size=(2,2), use_bias=False, data_format='channels_first', padding='same'))
     model.add(BatchNormalization())
-    model.add(Activation(acti))
+    model.add(LeakyReLU(alpha=lReLUAlpha))
     model.add(Conv2D(64, kernel_size=(2,2), use_bias=False, data_format='channels_first', padding='same'))
     model.add(BatchNormalization())
-    model.add(Activation(acti))
+    model.add(LeakyReLU(alpha=lReLUAlpha))
 
     ###########################
 
+    """model.add(Conv2D(128, kernel_size=(1,1), use_bias=False, data_format='channels_first', padding='same'))
+    model.add(BatchNormalization())
+    model.add(LeakyReLU(alpha=lReLUAlpha))
     model.add(Conv2D(128, kernel_size=(1,1), use_bias=False, data_format='channels_first', padding='same'))
     model.add(BatchNormalization())
-    model.add(Activation(acti))
+    model.add(LeakyReLU(alpha=lReLUAlpha))
     model.add(Conv2D(128, kernel_size=(1,1), use_bias=False, data_format='channels_first', padding='same'))
     model.add(BatchNormalization())
-    model.add(Activation(acti))
-    model.add(Conv2D(128, kernel_size=(1,1), use_bias=False, data_format='channels_first', padding='same'))
-    model.add(BatchNormalization())
-    model.add(Activation(acti))
+    model.add(LeakyReLU(alpha=lReLUAlpha))"""
 
     model.add(Flatten())
 
@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     try:
           model.fit(dataset[0], dataset[1],
-                batch_size=1024,
+                batch_size=256,
                 epochs=12,
                 shuffle=True,
                 verbose=1,
