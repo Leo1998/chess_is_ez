@@ -11,10 +11,10 @@ from keras.callbacks import ModelCheckpoint
 
 import numpy as np
 
-def load_dataset(filepath):
-    d = np.load(filepath, mmap_mode='r+')
-    X = d['arr_0']
-    Y = d['arr_1']
+def load_dataset(xfilepath, yfilepath):
+    X = np.load(xfilepath, mmap_mode='r')
+    Y = np.load(yfilepath, mmap_mode='r')
+    
     print("Loaded dataset", X.shape, Y.shape)
     return (X, Y)
 
@@ -80,7 +80,7 @@ def create_model():
     return model
 
 if __name__ == "__main__":
-    dataset = load_dataset("parsed_data/dataset_10M.npz")
+    dataset = load_dataset("parsed_data/X_10M.npy", "parsed_data/Y_10M.npy")
 
     model = create_model()
 
@@ -92,8 +92,8 @@ if __name__ == "__main__":
 
     try:
           model.fit(dataset[0], dataset[1],
-                batch_size=256,
-                epochs=12,
+                batch_size=512,
+                epochs=8,
                 shuffle=True,
                 verbose=1,
                 callbacks=[checkpoint],
@@ -101,4 +101,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
           model.save("models/interrupted-{}.model".format(time.time()))
 
-    model.save("models/small-10M-12E.model")
+    model.save("models/small-10M-8E.model")

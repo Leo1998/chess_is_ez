@@ -53,3 +53,6 @@ class GameState(object):
         state[4] = (self.board.turn*1.0)
 
         return state
+
+    def edges(self):
+        return list(self.board.legal_moves)
