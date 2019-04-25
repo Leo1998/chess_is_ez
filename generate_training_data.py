@@ -33,10 +33,14 @@ def get_dataset(num_samples=None):
   return X,Y
 
 if __name__ == "__main__":
-  X,Y = get_dataset(10000)
-  np.save("parsed_data/X_10K.npy", X)
-  np.save("parsed_data/Y_10K.npy", Y)
+  #X,Y = get_dataset(10000)
+  #np.save("parsed_data/X_10K.npy", X)
+  #np.save("parsed_data/Y_10K.npy", Y)
 
-  X,Y = get_dataset(10000000)
-  np.save("parsed_data/X_10M.npy", X)
-  np.save("parsed_data/Y_10M.npy", Y)
+  X,Y = get_dataset(1000000)
+  np.save("parsed_data/X_1M.npy", X)
+  np.save("parsed_data/Y_1M.npy", Y)
+
+  #X,Y = get_dataset(10000000)
+  #np.save("parsed_data/X_10M.npy", X)
+  #np.save("parsed_data/Y_10M.npy", Y)

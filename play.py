@@ -7,7 +7,7 @@ from game_state import GameState
 from keras.models import load_model
 from flask import Flask
 
-model = load_model('models/net-10K-8E.model')
+model = load_model('models/net-1M-10E.model')
 
 #wtf keras???
 model._make_predict_function()
@@ -53,7 +53,7 @@ def selfplay():
     while not s.board.is_game_over():
         ai_move(s)
         ret += '<img width=600 height=600 src="data:image/svg+xml;base64,{}"></img><br/>'.format(stateToSvg(s))
-        print(s.board.result())
+        #print(s.board.result())
 
     return ret
 
