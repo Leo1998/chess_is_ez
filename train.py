@@ -4,8 +4,9 @@ os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
 
 import time
 
-from keras.layers import Conv2D, Flatten, Dense
+from keras.layers import Conv2D, Flatten, Dense, BatchNormalization, Activation, LeakyReLU
 from keras.models import Sequential
+from keras.models import load_model
 from keras.callbacks import ModelCheckpoint
 
 import numpy as np
@@ -19,21 +20,54 @@ def load_dataset(filepath):
 
 def create_model():
     model = Sequential()
-    model.add(Conv2D(5, kernel_size=(3,3), data_format='channels_first', activation='relu', padding='same', input_shape=(5,8,8)))
-    model.add(Conv2D(16, kernel_size=(3,3), data_format='channels_first', activation='relu', padding='same'))
-    model.add(Conv2D(16, kernel_size=(3,3), data_format='channels_first', activation='relu', padding='same'))
 
-    model.add(Conv2D(32, kernel_size=(3,3), data_format='channels_first', activation='relu', padding='same'))
-    model.add(Conv2D(32, kernel_size=(3,3), data_format='channels_first', activation='relu', padding='same'))
-    model.add(Conv2D(32, kernel_size=(3,3), data_format='channels_first', activation='relu', padding='same'))
+    acti = LeakyReLU(alpha=0.2)
 
-    model.add(Conv2D(64, kernel_size=(2,2), data_format='channels_first', activation='relu', padding='same'))
-    model.add(Conv2D(64, kernel_size=(2,2), data_format='channels_first', activation='relu', padding='same'))
-    model.add(Conv2D(64, kernel_size=(2,2), data_format='channels_first', activation='relu', padding='same'))
+    model.add(Conv2D(5, kernel_size=(3,3), use_bias=False, data_format='channels_first', padding='same', input_shape=(5,8,8)))
+    model.add(BatchNormalization())
+    model.add(Activation(acti))
+    model.add(Conv2D(16, kernel_size=(3,3), use_bias=False, data_format='channels_first', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation(acti))
+    model.add(Conv2D(16, kernel_size=(3,3), use_bias=False, data_format='channels_first', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation(acti))
 
-    model.add(Conv2D(128, kernel_size=(1,1), data_format='channels_first', activation='relu', padding='same'))
-    model.add(Conv2D(128, kernel_size=(1,1), data_format='channels_first', activation='relu', padding='same'))
-    model.add(Conv2D(128, kernel_size=(1,1), data_format='channels_first', activation='relu', padding='same'))
+    ###########################
+
+    model.add(Conv2D(32, kernel_size=(3,3), use_bias=False, data_format='channels_first', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation(acti))
+    model.add(Conv2D(32, kernel_size=(3,3), use_bias=False, data_format='channels_first', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation(acti))
+    model.add(Conv2D(32, kernel_size=(3,3), use_bias=False, data_format='channels_first', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation(acti))
+
+    ###########################
+
+    model.add(Conv2D(64, kernel_size=(2,2), use_bias=False, data_format='channels_first', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation(acti))
+    model.add(Conv2D(64, kernel_size=(2,2), use_bias=False, data_format='channels_first', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation(acti))
+    model.add(Conv2D(64, kernel_size=(2,2), use_bias=False, data_format='channels_first', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation(acti))
+
+    ###########################
+
+    model.add(Conv2D(128, kernel_size=(1,1), use_bias=False, data_format='channels_first', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation(acti))
+    model.add(Conv2D(128, kernel_size=(1,1), use_bias=False, data_format='channels_first', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation(acti))
+    model.add(Conv2D(128, kernel_size=(1,1), use_bias=False, data_format='channels_first', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Activation(acti))
 
     model.add(Flatten())
 
@@ -41,13 +75,17 @@ def create_model():
 
     model.compile(loss="mean_squared_error", optimizer='adam')
 
-    #model.summary()
+    #print model structure
+    model.summary()
     return model
 
 if __name__ == "__main__":
     dataset = load_dataset("parsed_data/dataset_10M.npz")
 
     model = create_model()
+
+    #use this for retraining
+    #model = load_model('models/')
 
     filepath="checkpoints/weights-improvement-{epoch:02d}-{loss:.2f}.hdf5"
     checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=False)
