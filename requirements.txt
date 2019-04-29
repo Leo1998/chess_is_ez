@@ -1,5 +1,5 @@
 numpy
 tensorflow
-flask 
+PyQt5 
 python-chess
 keras

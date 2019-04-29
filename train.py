@@ -79,18 +79,18 @@ def create_model():
 if __name__ == "__main__":
     dataset = load_dataset("parsed_data/X_1M.npy", "parsed_data/Y_1M.npy")
 
-    #model = create_model()
+    model = create_model()
 
     #use this for retraining
-    model = load_model('models/net-1M-40E-v2.model')
+    #model = load_model('models/net-1M-60E-v2.model')
 
     filepath="checkpoints/weights-improvement-{epoch:02d}-{loss:.2f}.hdf5"
     checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=False)
 
     try:
           model.fit(dataset[0], dataset[1],
-                batch_size=512,
-                epochs=20,
+                batch_size=256,
+                epochs=10,
                 shuffle=True,
                 verbose=1,
                 #callbacks=[checkpoint],
@@ -98,4 +98,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
           model.save("models/interrupted-{}.model".format(time.time()))
 
-    model.save("models/net-1M-60E-v2.model")
+    model.save("models/test-1M-10E.model")

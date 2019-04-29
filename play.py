@@ -7,13 +7,13 @@ from game_state import GameState
 from keras.models import load_model
 from flask import Flask
 
-model = load_model('models/net-1M-40E-v2.model')
+model = load_model('models/net-1M-60E-v2.model')
 
 #wtf keras???
 model._make_predict_function()
 
 def stateToSvg(state):
-    return base64.b64encode(chess.svg.board(board=state.board).encode('utf-8')).decode('utf-8')
+    return chess.svg.board(board=state.board).encode('utf-8')
 
 def eval_move(state):
     tensor = state.serialize()
@@ -38,24 +38,50 @@ def ai_move(state):
 
     state.board.push(sorted_moves[0][1])
 
-app = Flask(__name__)
+s = GameState()
 
-@app.route("/")
-def root():
-    return "Test my ass"
+from PyQt5 import QtSvg
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLineEdit, QPushButton
+import sys
 
-@app.route("/selfplay")
-def selfplay():
-    s = GameState()
 
-    ret = '<html><head>'
-    
-    while not s.board.is_game_over():
+class App(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('chezzzz')
+        self.setGeometry(100, 100, 600, 650)
+
+        self.chessView = QtSvg.QSvgWidget(self)
+        self.chessView.resize(600, 600)
+        self.chessView.load(stateToSvg(s))
+
+        self.textbox = QLineEdit(self)
+        self.textbox.move(0, 600)
+        self.textbox.resize(400, 50)
+        self.textbox.editingFinished.connect(self.do_move)
+
+        self.button = QPushButton("Move", self)
+        self.button.move(400, 600)
+        self.button.resize(200, 50)
+        self.button.clicked.connect(self.do_move)
+
+        self.show()
+
+    def do_move(self):
+        move = self.textbox.text()
+        self.textbox.setText("")
+
+        try:
+            s.board.push_san(move)
+            self.chessView.load(stateToSvg(s))
+        except Exception:
+            traceback.print_exc()
+
         ai_move(s)
-        ret += '<img width=600 height=600 src="data:image/svg+xml;base64,{}"></img><br/>'.format(stateToSvg(s))
-        #print(s.board.result())
+        self.chessView.load(stateToSvg(s))
 
-    return ret
 
 if __name__ == '__main__':
-    app.run()
+    app = QApplication(sys.argv)
+    ex = App()
+    sys.exit(app.exec_())
