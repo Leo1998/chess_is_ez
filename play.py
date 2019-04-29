@@ -7,7 +7,7 @@ from game_state import GameState
 from keras.models import load_model
 from flask import Flask
 
-model = load_model('models/net-1M-10E.model')
+model = load_model('models/net-1M-40E-v2.model')
 
 #wtf keras???
 model._make_predict_function()

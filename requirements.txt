@@ -1,0 +1,5 @@
+numpy
+tensorflow
+flask 
+python-chess
+keras
