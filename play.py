@@ -7,7 +7,7 @@ from game_state import GameState
 from keras.models import load_model
 from flask import Flask
 
-model = load_model('models/net-1M-60E-v2.model')
+model = load_model('models/net-100E-10K-eval.model')
 
 #wtf keras???
 model._make_predict_function()
@@ -72,7 +72,7 @@ class App(QMainWindow):
         self.textbox.setText("")
 
         try:
-            s.board.push_san(move)
+            s.board.push(s.board.parse_uci(move))
             self.chessView.load(stateToSvg(s))
         except Exception:
             traceback.print_exc()

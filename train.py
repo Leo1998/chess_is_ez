@@ -77,7 +77,7 @@ def create_model():
     return model
 
 if __name__ == "__main__":
-    dataset = load_dataset("parsed_data/X_1M.npy", "parsed_data/Y_1M.npy")
+    dataset = load_dataset("parsed_data/X_10K_2.npy", "parsed_data/Y_10K_2.npy")
 
     model = create_model()
 
@@ -89,8 +89,8 @@ if __name__ == "__main__":
 
     try:
           model.fit(dataset[0], dataset[1],
-                batch_size=256,
-                epochs=10,
+                batch_size=512,
+                epochs=100,
                 shuffle=True,
                 verbose=1,
                 #callbacks=[checkpoint],
@@ -98,4 +98,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
           model.save("models/interrupted-{}.model".format(time.time()))
 
-    model.save("models/test-1M-10E.model")
+    model.save("models/net-100E-10K-eval.model")

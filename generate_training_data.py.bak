@@ -1,0 +1,60 @@
+import os
+import chess.pgn
+import chess.engine
+import numpy as np
+from game_state import GameState
+
+engine = chess.engine.SimpleEngine.popen_uci("/usr/games/stockfish")
+
+def analyse(board):
+    info = engine.analyse(board, chess.engine.Limit(depth=10))
+    score = (info["score"].white().score())/100
+    
+    if score is None:
+        return 1
+    return max(min(score/5.0, 1), -1)
+
+def get_dataset(num_samples=None):
+  X,Y = [], []
+  games_parsed = 0
+  #values = {'1/2-1/2':0, '0-1':-1, '1-0':1}
+  
+  for fn in os.listdir("data"):
+    pgn = open(os.path.join("data", fn), encoding="ISO-8859-1")
+    while 1:
+      game = chess.pgn.read_game(pgn)
+      if game is None:
+        break
+      #res = game.headers['Result']
+      #if res not in values:
+      #  continue
+
+      board = game.board()
+      for i, move in enumerate(game.mainline_moves()):
+          rel_score = analyse(board)
+          print(rel_score)
+
+          board.push(move)
+          ser = GameState(board).serialize()
+          X.append(ser)
+          Y.append(rel_score)
+      print("Parsed {} games, got {} moves".format(games_parsed, len(X)))
+      if num_samples is not None and len(X) > num_samples:
+        return X,Y
+      games_parsed += 1
+  X = np.array(X)
+  Y = np.array(Y)
+  return X,Y
+
+if __name__ == "__main__":
+  #X,Y = get_dataset(10000)
+  #np.save("parsed_data/X_10K_2.npy", X)
+  #np.save("parsed_data/Y_10K_2.npy", Y)
+
+  X,Y = get_dataset(1000000)
+  np.save("parsed_data/X_1M_2.npy", X)
+  np.save("parsed_data/Y_1M_2.npy", Y)
+
+  #X,Y = get_dataset(10000000)
+  #np.save("parsed_data/X_10M.npy", X)
+  #np.save("parsed_data/Y_10M.npy", Y)
