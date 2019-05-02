@@ -7,7 +7,7 @@ from game_state import GameState
 from keras.models import load_model
 from flask import Flask
 
-model = load_model('models/net-100E-10K-eval.model')
+model = load_model('models/net-1M-60E-v2.model')
 
 #wtf keras???
 model._make_predict_function()
@@ -20,14 +20,25 @@ def eval_move(state):
     res = model.predict(tensor[None])
     return res[0][0]
 
-def ai_move(state):
-    sorted_moves = []
+def explore_moves(state, depth, turn_pov):
+    moves = []
     for e in state.edges():
         state.board.push(e)
-        value = eval_move(state)
-        sorted_moves.append((value, e))
+
+        if depth > 1:
+            next_moves = explore_moves(state, depth-1, turn_pov)
+            max_move = max(next_moves, key=lambda x: x[0])
+            moves.append((max_move[0], e))
+        else:
+            value = eval_move(state)
+            moves.append((value, e))
+
         state.board.pop()
-    sorted_moves = sorted(sorted_moves, key=lambda x: x[0], reverse=state.board.turn)
+
+    return sorted(moves, key=lambda x: x[0], reverse=turn_pov)
+
+def ai_move(state):
+    sorted_moves = explore_moves(state, 3, state.board.turn)
 
     if len(sorted_moves) == 0:
         return
@@ -75,7 +86,11 @@ class App(QMainWindow):
             s.board.push(s.board.parse_uci(move))
             self.chessView.load(stateToSvg(s))
         except Exception:
-            traceback.print_exc()
+            print("Invalid move: {}".format(move))
+            return
+
+        if s.board.is_game_over():
+            return
 
         ai_move(s)
         self.chessView.load(stateToSvg(s))

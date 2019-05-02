@@ -37,9 +37,9 @@ if __name__ == "__main__":
   #np.save("parsed_data/X_10K.npy", X)
   #np.save("parsed_data/Y_10K.npy", Y)
 
-  X,Y = get_dataset(1000000)
-  np.save("parsed_data/X_1M.npy", X)
-  np.save("parsed_data/Y_1M.npy", Y)
+  X,Y = get_dataset(5000000)
+  np.save("parsed_data/X_500K.npy", X)
+  np.save("parsed_data/Y_500K.npy", Y)
 
   #X,Y = get_dataset(10000000)
   #np.save("parsed_data/X_10M.npy", X)
