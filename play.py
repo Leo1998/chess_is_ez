@@ -24,11 +24,17 @@ def explore_moves(state, depth, turn_pov):
     moves = []
     edges = state.edges()
 
+    assert(depth % 2 == 1)
+
     if len(edges) == 0:
         return []
 
     for e in edges:
         state.board.push(e)
+
+        if not state.board.is_valid():
+            state.board.pop()
+            continue
 
         if depth > 1:
             next_moves = explore_moves(state, depth-1, turn_pov)
@@ -36,8 +42,8 @@ def explore_moves(state, depth, turn_pov):
             if len(next_moves) == 0:
                 continue
 
-            max_move = max(next_moves, key=lambda x: x[0])
-            moves.append((max_move[0], e))
+            best_move = next_moves[0]
+            moves.append((best_move[0], e))
         else:
             value = eval_move(state)
             moves.append((value, e))
@@ -47,7 +53,7 @@ def explore_moves(state, depth, turn_pov):
     return sorted(moves, key=lambda x: x[0], reverse=turn_pov)
 
 def ai_move(state):
-    sorted_moves = explore_moves(state, 3, state.board.turn)
+    sorted_moves = explore_moves(state, 1, state.board.turn)
 
     if len(sorted_moves) == 0:
         return
