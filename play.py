@@ -2,10 +2,17 @@
 import chess
 import chess.svg
 import base64
+import math
 import numpy as np
 from game_state import GameState
 from keras.models import load_model
 from flask import Flask
+
+def signum(x):
+    if x >= 0:
+        return 1
+    else:
+        return -1
 
 model = load_model('models/net-1M-60E-v2.model')
 
@@ -24,17 +31,23 @@ def explore_moves(state, depth, turn_pov):
     moves = []
     edges = state.edges()
 
-    assert(depth % 2 == 1)
-
-    if len(edges) == 0:
-        return []
-
     for e in edges:
         state.board.push(e)
 
         if not state.board.is_valid():
             state.board.pop()
             continue
+
+        value = eval_move(state)
+
+        #opponent move
+        thres = 0.4
+        if turn_pov == state.board.turn:
+            turn_signum = signum(state.board.turn * 1.0 - 0.5)
+            if signum(value) != turn_signum or abs(value) <= thres:
+                continue
+
+
 
         if depth > 1:
             next_moves = explore_moves(state, depth-1, turn_pov)
@@ -45,7 +58,6 @@ def explore_moves(state, depth, turn_pov):
             best_move = next_moves[0]
             moves.append((best_move[0], e))
         else:
-            value = eval_move(state)
             moves.append((value, e))
 
         state.board.pop()
@@ -56,6 +68,7 @@ def ai_move(state):
     sorted_moves = explore_moves(state, 1, state.board.turn)
 
     if len(sorted_moves) == 0:
+        print("AI can't move...")
         return
     
     print("Top 3:")
