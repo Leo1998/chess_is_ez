@@ -22,11 +22,17 @@ def eval_move(state):
 
 def explore_moves(state, depth, turn_pov):
     moves = []
-    for e in state.edges():
+    edges = state.edges()
+
+    if len(edges) == 0:
+        return []
+
+    for e in edges:
         state.board.push(e)
 
         if depth > 1:
             next_moves = explore_moves(state, depth-1, turn_pov)
+
             max_move = max(next_moves, key=lambda x: x[0])
             moves.append((max_move[0], e))
         else:
