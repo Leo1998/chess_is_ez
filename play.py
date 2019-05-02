@@ -33,6 +33,9 @@ def explore_moves(state, depth, turn_pov):
         if depth > 1:
             next_moves = explore_moves(state, depth-1, turn_pov)
 
+            if len(next_moves) == 0:
+                continue
+
             max_move = max(next_moves, key=lambda x: x[0])
             moves.append((max_move[0], e))
         else:
